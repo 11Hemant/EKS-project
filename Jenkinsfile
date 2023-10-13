@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        registry = "227962133227.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo-2"
+        registry = "263292212959.dkr.ecr.us-west-1.amazonaws.com/batch-15-repo"
     }
     
     stages {
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ygminds73/EKS-project.git']]])
+                   checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/11Hemant/EKS-project.git']])
             }
         }
     
@@ -32,8 +32,8 @@ pipeline {
          steps {
              script {
                 
-                sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 227962133227.dkr.ecr.us-east-1.amazonaws.com"
-                sh "docker push 227962133227.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo-2:latest"
+                sh "aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin 263292212959.dkr.ecr.us-west-1.amazonaws.com"
+                sh "docker push 263292212959.dkr.ecr.us-west-1.amazonaws.com/batch-15-repo:latest"
                     
                  
              }
@@ -42,7 +42,7 @@ pipeline {
         
         stage ("Kube Deploy") {
             steps {
-                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', serverUrl: ''){
+                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'Batch-15', namespace: '', restrictKubeConfigAccess: false, serverUrl: ''){
                  sh "kubectl apply -f eks-deploy-from-ecr.yaml"
                 }
             }
